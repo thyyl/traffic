@@ -2,32 +2,19 @@ import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ApolloDriver } from '@nestjs/apollo';
-import { GraphQLModule } from '@nestjs/graphql';
 import { CoreModule } from '@app/core';
 import { SnakeNamingStrategy } from '@app/core/types';
-import { AuthModule } from '@modules/auth/auth.module';
-import { EmailModule } from '@modules/email/email.module';
-import { UserModule } from '@modules/user/user.module';
-import { TokenModule } from '@modules/token/token.module';
-import { AgentModule } from '@modules/agent/agent.module';
+import { AuditLogModule } from '@modules/audit-log/audit-log.module';
 
 @Module({
   imports: [
-    GraphQLModule.forRootAsync({
-      driver: ApolloDriver,
-      imports: [CoreModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) =>
-        configService.get('service').graphql
-    }),
     TypeOrmModule.forRootAsync({
       imports: [CoreModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const database = configService.get('service').database;
         return {
-          type: 'mysql',
+          type: 'postgres',
           host: database.host,
           port: parseInt(database.port),
           username: database.username,
@@ -55,12 +42,8 @@ import { AgentModule } from '@modules/agent/agent.module';
       },
       inject: [ConfigService]
     }),
-    AgentModule,
-    AuthModule,
     CoreModule,
-    EmailModule,
-    TokenModule,
-    UserModule
+    AuditLogModule
   ]
 })
 export class AppModule {}
