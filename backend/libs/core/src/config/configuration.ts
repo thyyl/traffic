@@ -26,6 +26,12 @@ export const configuration = () => ({
     }
   },
 
+  // ====================== SG Data API
+  sgApi: {
+    traffic: process.env.TRAFFIC_API,
+    weatherForecast: process.env.WEATHER_FORECAST_API
+  },
+
   // ====================== ENV
   service: {
     port: parseInt(process.env.IDENTITY_SERVICE_PORT || '3334', 10),
