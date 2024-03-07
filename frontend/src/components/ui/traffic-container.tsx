@@ -10,8 +10,8 @@ export const TrafficContainer: React.FC<TrafficContainerProps> = ({
   image,
 }) => {
   return (
-    <div className="border border-white/[0.1] rounded-2xl">
-      <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[30rem] h-[20rem] ">
+    <div className="border border-white/[0.1] rounded-2xl w-[30rem] h-[25rem] bg-black">
+      <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2  ">
         <h3 className="max-w-xs !pb-2 !m-0 font-bold  text-base text-slate-100">
           Traffic Conditions At Punggol
         </h3>
@@ -24,8 +24,8 @@ export const TrafficContainer: React.FC<TrafficContainerProps> = ({
           src={image}
           alt="cloudy"
           className="flex flex-1 w-full rounded-lg mt-4"
-          width={300}
-          height={300}
+          width={400}
+          height={100}
         />
       </div>
     </div>
