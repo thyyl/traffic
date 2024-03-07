@@ -1,0 +1,538 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AccessToken {
+  accessToken: String!
+  expiresIn: Float!
+  refreshToken: String!
+  refreshExpiresIn: Float!
+}
+
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  email: String!
+  phoneNumber: String!
+  verified: Boolean!
+  password: String
+  type: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type UserEdge {
+  """The node containing the User"""
+  node: User!
+
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+}
+
+"""Cursor for paging through collections"""
+scalar ConnectionCursor
+
+type PageInfo {
+  """true if paging forward and there are more records."""
+  hasNextPage: Boolean
+
+  """true if paging backwards and there are more records."""
+  hasPreviousPage: Boolean
+
+  """The cursor of the first returned record."""
+  startCursor: ConnectionCursor
+
+  """The cursor of the last returned record."""
+  endCursor: ConnectionCursor
+}
+
+type UserConnection {
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Array of edges."""
+  edges: [UserEdge!]!
+}
+
+type OffsetPageInfo {
+  """true if paging forward and there are more records."""
+  hasNextPage: Boolean
+
+  """true if paging backwards and there are more records."""
+  hasPreviousPage: Boolean
+}
+
+type UserAggregateGroupBy {
+  id: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+  name: String
+  email: String
+  phoneNumber: String
+  verified: Boolean
+  type: String
+}
+
+type UserCountAggregate {
+  id: Int
+  createdAt: Int
+  updatedAt: Int
+  name: Int
+  email: Int
+  phoneNumber: Int
+  verified: Int
+  type: Int
+}
+
+type UserMinAggregate {
+  id: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+  name: String
+  email: String
+  phoneNumber: String
+  type: String
+}
+
+type UserMaxAggregate {
+  id: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+  name: String
+  email: String
+  phoneNumber: String
+  type: String
+}
+
+type Token {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  token: String!
+  valid: Boolean!
+  medium: String!
+  recipient: String!
+  expiresAt: DateTime!
+}
+
+type TokenEdge {
+  """The node containing the Token"""
+  node: Token!
+
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+}
+
+type TokenConnection {
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Array of edges."""
+  edges: [TokenEdge!]!
+}
+
+type TokenAggregateGroupBy {
+  id: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+  token: String
+  valid: Boolean
+  medium: String
+  recipient: String
+  expiresAt: DateTime
+}
+
+type TokenCountAggregate {
+  id: Int
+  createdAt: Int
+  updatedAt: Int
+  token: Int
+  valid: Int
+  medium: Int
+  recipient: Int
+  expiresAt: Int
+}
+
+type TokenMinAggregate {
+  id: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+  token: String
+  medium: String
+  recipient: String
+  expiresAt: DateTime
+}
+
+type TokenMaxAggregate {
+  id: ID
+  createdAt: DateTime
+  updatedAt: DateTime
+  token: String
+  medium: String
+  recipient: String
+  expiresAt: DateTime
+}
+
+type Agent {
+  propertyAgentId: String!
+  userId: String!
+  user: User!
+}
+
+type AgentEdge {
+  """The node containing the Agent"""
+  node: Agent!
+
+  """Cursor for this node."""
+  cursor: ConnectionCursor!
+}
+
+type AgentConnection {
+  """Paging information"""
+  pageInfo: PageInfo!
+
+  """Array of edges."""
+  edges: [AgentEdge!]!
+}
+
+type AgentAggregateGroupBy {
+  propertyAgentId: String
+  userId: String
+}
+
+type AgentCountAggregate {
+  propertyAgentId: Int
+  userId: Int
+}
+
+type AgentMinAggregate {
+  propertyAgentId: String
+  userId: String
+}
+
+type AgentMaxAggregate {
+  propertyAgentId: String
+  userId: String
+}
+
+type Query {
+  agent(
+    """The id of the record to find."""
+    id: ID!
+  ): Agent
+  agents(
+    """Limit or page results."""
+    paging: CursorPaging = {first: 10}
+
+    """Specify to filter the records returned."""
+    filter: AgentFilter = {}
+
+    """Specify to sort results."""
+    sorting: [AgentSort!] = []
+  ): AgentConnection!
+  token(
+    """The id of the record to find."""
+    id: ID!
+  ): Token
+  tokens(
+    """Limit or page results."""
+    paging: CursorPaging = {first: 10}
+
+    """Specify to filter the records returned."""
+    filter: TokenFilter = {}
+
+    """Specify to sort results."""
+    sorting: [TokenSort!] = []
+  ): TokenConnection!
+  user(
+    """The id of the record to find."""
+    id: ID!
+  ): User
+  users(
+    """Limit or page results."""
+    paging: CursorPaging = {first: 10}
+
+    """Specify to filter the records returned."""
+    filter: UserFilter = {}
+
+    """Specify to sort results."""
+    sorting: [UserSort!] = []
+  ): UserConnection!
+}
+
+input CursorPaging {
+  """Paginate before opaque cursor"""
+  before: ConnectionCursor
+
+  """Paginate after opaque cursor"""
+  after: ConnectionCursor
+
+  """Paginate first"""
+  first: Int
+
+  """Paginate last"""
+  last: Int
+}
+
+input AgentFilter {
+  and: [AgentFilter!]
+  or: [AgentFilter!]
+  propertyAgentId: StringFieldComparison
+  userId: StringFieldComparison
+  user: AgentFilterUserFilter
+}
+
+input StringFieldComparison {
+  is: Boolean
+  isNot: Boolean
+  eq: String
+  neq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  like: String
+  notLike: String
+  iLike: String
+  notILike: String
+  in: [String!]
+  notIn: [String!]
+}
+
+input AgentFilterUserFilter {
+  and: [AgentFilterUserFilter!]
+  or: [AgentFilterUserFilter!]
+  id: IDFilterComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  name: StringFieldComparison
+  email: StringFieldComparison
+  phoneNumber: StringFieldComparison
+  verified: BooleanFieldComparison
+  type: StringFieldComparison
+}
+
+input IDFilterComparison {
+  is: Boolean
+  isNot: Boolean
+  eq: ID
+  neq: ID
+  gt: ID
+  gte: ID
+  lt: ID
+  lte: ID
+  like: ID
+  notLike: ID
+  iLike: ID
+  notILike: ID
+  in: [ID!]
+  notIn: [ID!]
+}
+
+input DateFieldComparison {
+  is: Boolean
+  isNot: Boolean
+  eq: DateTime
+  neq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  between: DateFieldComparisonBetween
+  notBetween: DateFieldComparisonBetween
+}
+
+input DateFieldComparisonBetween {
+  lower: DateTime!
+  upper: DateTime!
+}
+
+input BooleanFieldComparison {
+  is: Boolean
+  isNot: Boolean
+}
+
+input AgentSort {
+  field: AgentSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum AgentSortFields {
+  propertyAgentId
+  userId
+}
+
+"""Sort Directions"""
+enum SortDirection {
+  ASC
+  DESC
+}
+
+"""Sort Nulls Options"""
+enum SortNulls {
+  NULLS_FIRST
+  NULLS_LAST
+}
+
+input TokenFilter {
+  and: [TokenFilter!]
+  or: [TokenFilter!]
+  id: IDFilterComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  token: StringFieldComparison
+  valid: BooleanFieldComparison
+  medium: StringFieldComparison
+  recipient: StringFieldComparison
+  expiresAt: DateFieldComparison
+}
+
+input TokenSort {
+  field: TokenSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum TokenSortFields {
+  id
+  createdAt
+  updatedAt
+  token
+  valid
+  medium
+  recipient
+  expiresAt
+}
+
+input UserFilter {
+  and: [UserFilter!]
+  or: [UserFilter!]
+  id: IDFilterComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  name: StringFieldComparison
+  email: StringFieldComparison
+  phoneNumber: StringFieldComparison
+  verified: BooleanFieldComparison
+  type: StringFieldComparison
+}
+
+input UserSort {
+  field: UserSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum UserSortFields {
+  id
+  createdAt
+  updatedAt
+  name
+  email
+  phoneNumber
+  verified
+  type
+}
+
+type Mutation {
+  setUserOnAgent(input: SetUserOnAgentInput!): Agent!
+  removeUserFromAgent(input: RemoveUserFromAgentInput!): Agent!
+  agentRegistration(input: AgentRegistrationInput!): Boolean!
+  login(input: LoginInput!): AccessToken!
+  verifyToken(input: TokenVerificationInput!): Boolean!
+  resendToken(input: TokenResendInput!): Boolean!
+  requestPasswordResetToken(input: TokenResendInput!): Boolean!
+  resetPasswordTokenVerification(input: ResetPasswordTokenVerificationInput!): Boolean!
+  userUpdatePassword(input: UserUpdatePasswordInput!): User!
+  agentUpdateProfile(input: AgentUpdateProfileInput!): User!
+}
+
+input SetUserOnAgentInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input RemoveUserFromAgentInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input AgentRegistrationInput {
+  name: String!
+  email: String!
+  phoneCountryCode: String!
+  phoneNumber: String!
+  verified: Boolean = false
+  type: UserTypes!
+  password: String!
+  propertyAgentId: String!
+}
+
+enum UserTypes {
+  ADMIN
+  AGENT
+  SERVICE_PROVIDER
+  TENANT
+}
+
+input LoginInput {
+  """Email or phone number"""
+  identifier: String!
+  password: String!
+}
+
+input TokenVerificationInput {
+  purpose: TokenPurposeTypes = ACCOUNT_VERIFICATION
+  token: String!
+  identifier: String!
+}
+
+enum TokenPurposeTypes {
+  ACCOUNT_VERIFICATION
+  PASSWORD_RESET
+}
+
+input TokenResendInput {
+  purpose: TokenPurposeTypes = ACCOUNT_VERIFICATION
+  identifier: String!
+}
+
+input ResetPasswordTokenVerificationInput {
+  purpose: TokenPurposeTypes = ACCOUNT_VERIFICATION
+  token: String!
+  identifier: String!
+  password: String!
+}
+
+input UserUpdatePasswordInput {
+  newPassword: String!
+  oldPassword: String!
+}
+
+input AgentUpdateProfileInput {
+  name: String
+  email: String
+  phoneCountryCode: String
+  phoneNumber: String
+  type: UserTypes
+  password: String
+  agent: AgentInput
+}
+
+input AgentInput {
+  propertyAgentId: String!
+}
