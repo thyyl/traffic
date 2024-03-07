@@ -1,5 +1,6 @@
 "use client";
 import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 
@@ -9,5 +10,10 @@ export default function Home() {
 
   setTheme("dark");
 
-  return <DatePicker />;
+  return (
+    <div>
+      <DatePicker />
+      <TimePicker date={date} setDate={setDate} />
+    </div>
+  );
 }
