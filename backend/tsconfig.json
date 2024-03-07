@@ -18,13 +18,13 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/common": ["libs/common/src"],
-      "@app/common/*": ["libs/common/src/*"],
-      "@app/core": ["libs/core/src"],
-      "@app/core/*": ["libs/core/src/*"],
-      "@modules/*": ["src/modules/*"],
-      "@constants/*": ["src/constants/*"],
-      "@interfaces/*": ["src/interfaces/*"],
+      "@app/common": ["./libs/common/src"],
+      "@app/common/*": ["./libs/common/src/*"],
+      "@app/core": ["./libs/core/src"],
+      "@app/core/*": ["./libs/core/src/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@constants/*": ["./src/constants/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
     }
   }
 }
