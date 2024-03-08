@@ -5,21 +5,31 @@ import {
   Coordinates,
   TrafficTransportImagesResponseBody
 } from './dto/traffic.dto';
-import { WeatherForecastService } from '@modules/weather-forecast/weather-forecast.service';
-import { GeoApifyService } from '@modules/geoapify/geoapify.service';
+import {
+  TrafficLocationCode,
+  TrafficLocationStrategy
+} from './strategy/traffic-location.strategy';
 
 @Injectable()
 export class TrafficService {
   private client: HTTPClient;
+  private readonly trafficLocationStrategy: {
+    [code: string]: TrafficLocationStrategy;
+  };
 
-  constructor(
-    private readonly configService: ConfigService,
-    private readonly weatherForecastService: WeatherForecastService,
-    private readonly geoApifyService: GeoApifyService
-  ) {
+  constructor(private readonly configService: ConfigService) {
     this.client = new HTTPClient({
       baseURL: this.configService.get('sgApi').traffic
     });
+    this.trafficLocationStrategy = (
+      this.configService.get('strategy').locations as TrafficLocationStrategy[]
+    ).reduce(
+      (hash, strategy) =>
+        Array.isArray(strategy.code)
+          ? strategy.code.map((subCode) => ({ ...hash, [subCode]: strategy }))
+          : { ...hash, [strategy.code]: strategy },
+      {}
+    );
   }
 
   async getAllAvailableLocations(dateTime?: string): Promise<string[]> {
@@ -27,17 +37,11 @@ export class TrafficService {
 
     const coordinates = this.extractCoordinatesFromResponse(trafficResponse);
 
-    const test = await this.geoApifyService.getLocationFromCoordinates(
+    const strategy = this.trafficLocationStrategy[TrafficLocationCode.SG_DATA];
+
+    const locationsAvailable = await strategy.getLocationsFromCoordinates(
       coordinates
     );
-
-    console.log(test);
-
-    const locationsAvailable =
-      await this.weatherForecastService.geoDecodeCoordinatesToLocations(
-        coordinates,
-        dateTime
-      );
 
     return Array.from(new Set<string>(locationsAvailable)).sort();
   }

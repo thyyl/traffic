@@ -1,3 +1,5 @@
+import { TrafficLocationStrategies } from '@modules/traffic/strategy/traffic-location.strategy';
+
 export const configuration = () => ({
   // For this env value =  https://stackoverflow.com/a/59805161/4332049
   environment: process.env['NODE' + '_ENV'] ?? 'production',
@@ -24,6 +26,11 @@ export const configuration = () => ({
       backoff: process.env.REDIS_BULL_BACK_OFF || 5000,
       attempts: process.env.REDIS_BULL_ATTEMPTS || 5
     }
+  },
+
+  // ====================== STRATEGIES
+  strategy: {
+    locations: TrafficLocationStrategies
   },
 
   // ====================== SG Data API
