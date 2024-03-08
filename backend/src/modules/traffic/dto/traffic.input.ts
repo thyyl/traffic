@@ -1,7 +1,7 @@
-import { IsDate, IsOptional } from 'class-validator';
+import { IsISO8601, IsOptional } from 'class-validator';
 
 export class TrafficTransportRequestBody {
   @IsOptional()
-  @IsDate()
-  dateTime?: Date;
+  @IsISO8601()
+  dateTime?: string;
 }

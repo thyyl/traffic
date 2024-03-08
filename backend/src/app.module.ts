@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from '@app/core';
 import { SnakeNamingStrategy } from '@app/core/types';
 import { AuditLogModule } from '@modules/audit-log/audit-log.module';
+import { TrafficModule } from '@modules/traffic/traffic.module';
+import { WeatherForecastModule } from '@modules/weather-forecast/weather-forecast.module';
 
 @Module({
   imports: [
@@ -43,7 +45,9 @@ import { AuditLogModule } from '@modules/audit-log/audit-log.module';
       inject: [ConfigService]
     }),
     CoreModule,
-    AuditLogModule
+    AuditLogModule,
+    TrafficModule,
+    WeatherForecastModule
   ]
 })
 export class AppModule {}
