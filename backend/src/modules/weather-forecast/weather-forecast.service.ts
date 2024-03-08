@@ -7,12 +7,18 @@ import {
   WeatherForecastResponseBody
 } from './dto/weather-forecast.dto';
 import { DistanceCalculator } from '@app/common/helpers/distance-calculator';
+import { QueryBus } from '@nestjs/cqrs';
+import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
+import { UtilsHelper } from '@app/common';
 
 @Injectable()
 export class WeatherForecastService {
   private client: HTTPClient;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly queryBus: QueryBus
+  ) {
     this.client = new HTTPClient({
       baseURL: this.configService.get('sgApi').weatherForecast
     });
@@ -36,12 +42,20 @@ export class WeatherForecastService {
   }
 
   async geoDecodeCoordinatesToLocations(
-    coordinates: Coordinates[],
-    dateTime?: string
+    dateTime: string,
+    coordinates: Coordinates[]
   ): Promise<string[]> {
     Logger.log('[WeatherForecastService] Extracting coordinates from response');
 
-    const weatherData = await this.sendWeatherForecastRequest(dateTime);
+    const key = UtilsHelper.buildKey('WEATHER', 'WEATHER_ITEM', dateTime);
+
+    const { data: weatherData } = await this.queryBus.execute(
+      new GetReadAsideCachedData<WeatherForecastResponseBody>(
+        key,
+        () => this.sendWeatherForecastRequest(dateTime),
+        dateTime
+      )
+    );
 
     const areaMetadata = this.extractCoordinatesFromResponse(weatherData);
 

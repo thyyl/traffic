@@ -9,6 +9,9 @@ import {
   TrafficLocationCode,
   TrafficLocationStrategy
 } from './strategy/traffic-location.strategy';
+import { QueryBus } from '@nestjs/cqrs';
+import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
+import { UtilsHelper } from '@app/common';
 
 @Injectable()
 export class TrafficService {
@@ -17,7 +20,10 @@ export class TrafficService {
     [code: string]: TrafficLocationStrategy;
   };
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly queryBus: QueryBus
+  ) {
     this.client = new HTTPClient({
       baseURL: this.configService.get('sgApi').traffic
     });
@@ -32,14 +38,24 @@ export class TrafficService {
     );
   }
 
-  async getAllAvailableLocations(dateTime?: string): Promise<string[]> {
-    const trafficResponse = await this.sendTransportTrafficRequest(dateTime);
+  async getAllAvailableLocations(dateTime: string): Promise<string[]> {
+    const key = UtilsHelper.buildKey('TRAFFIC', 'TRAFFIC_ITEM', dateTime);
+
+    const { data: trafficResponse } = await this.queryBus.execute(
+      new GetReadAsideCachedData<TrafficTransportImagesResponseBody>(
+        key,
+        () => this.sendTransportTrafficRequest(dateTime),
+        dateTime
+      )
+    );
 
     const coordinates = this.extractCoordinatesFromResponse(trafficResponse);
 
-    const strategy = this.trafficLocationStrategy[TrafficLocationCode.SG_DATA];
+    const strategy =
+      this.trafficLocationStrategy[TrafficLocationCode.GEO_APIFY];
 
     const locationsAvailable = await strategy.getLocationsFromCoordinates(
+      dateTime,
       coordinates
     );
 
@@ -48,7 +64,7 @@ export class TrafficService {
 
   // TODO: WRAP IN TRY CATCH
   private async sendTransportTrafficRequest(
-    dateTime?: string
+    dateTime: string
   ): Promise<TrafficTransportImagesResponseBody> {
     Logger.log('[TrafficService] Sending Get Request with:', dateTime);
 

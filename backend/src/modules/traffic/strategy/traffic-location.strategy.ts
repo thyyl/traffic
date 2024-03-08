@@ -13,6 +13,7 @@ interface TrafficLocationStrategyInterface {
   readonly code: TrafficLocationCode;
   readonly init: (injector: Injector) => void;
   readonly getLocationsFromCoordinates: (
+    dateTime: string,
     coordinates: Coordinates[]
   ) => Promise<string[]>;
 }
@@ -29,9 +30,10 @@ export class TrafficLocationStrategy {
   }
 
   async getLocationsFromCoordinates(
+    dateTime: string,
     coordinates: Coordinates[]
   ): Promise<string[]> {
-    return this.config.getLocationsFromCoordinates(coordinates);
+    return this.config.getLocationsFromCoordinates(dateTime, coordinates);
   }
 }
 
@@ -45,9 +47,15 @@ const WeatherForecastTrafficLocationStrategy = new TrafficLocationStrategy({
     weatherForecastService = injector.get(WeatherForecastService);
   },
 
-  async getLocationsFromCoordinates(coordinates: Coordinates[]) {
+  async getLocationsFromCoordinates(
+    dateTime: string,
+    coordinates: Coordinates[]
+  ) {
     const locations =
-      await weatherForecastService.geoDecodeCoordinatesToLocations(coordinates);
+      await weatherForecastService.geoDecodeCoordinatesToLocations(
+        dateTime,
+        coordinates
+      );
 
     return Array.from(new Set<string>(locations)).sort();
   }
@@ -63,8 +71,12 @@ const GeoApifyTrafficLocationStrategy = new TrafficLocationStrategy({
     geoApifyService = injector.get(GeoApifyService);
   },
 
-  async getLocationsFromCoordinates(coordinates: Coordinates[]) {
+  async getLocationsFromCoordinates(
+    dateTime: string,
+    coordinates: Coordinates[]
+  ) {
     const locations = await geoApifyService.getLocationFromCoordinates(
+      dateTime,
       coordinates
     );
 

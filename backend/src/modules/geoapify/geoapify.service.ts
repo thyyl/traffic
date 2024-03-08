@@ -7,10 +7,16 @@ import {
   PostReverseResponseBody,
   ReverseLocationResponse
 } from './dto/geoapify.dto';
+import { UtilsHelper } from '@app/common';
+import { QueryBus } from '@nestjs/cqrs';
+import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
 
 @Injectable()
 export class GeoApifyService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly queryBus: QueryBus
+  ) {}
 
   async postReverseGeocodingRequest(coordinates: Coordinates[]): Promise<any> {
     Logger.log('[GeoApifyService] Sending Post Request');
@@ -30,9 +36,9 @@ export class GeoApifyService {
     return data;
   }
 
-  async getLocationFromCoordinates(
+  async getLocationFromCoordinatesRequest(
     coordinates: Coordinates[]
-  ): Promise<string[]> {
+  ): Promise<GeoApifyResponse> {
     const { url } = await this.postReverseGeocodingRequest(coordinates);
 
     Logger.log('[GeoApifyService] Extracting location from url:', url);
@@ -53,7 +59,26 @@ export class GeoApifyService {
       }
     }
 
-    return this.extractLocationNamesFromResponse(response as any);
+    return response;
+  }
+
+  async getLocationFromCoordinates(
+    dateTime: string,
+    coordinates: Coordinates[]
+  ): Promise<string[]> {
+    const key = UtilsHelper.buildKey('GEO_APIFY', 'GEO_APIFY_ITEM', dateTime);
+
+    const { data: response } = await this.queryBus.execute(
+      new GetReadAsideCachedData<GeoApifyResponse>(
+        key,
+        () => this.getLocationFromCoordinatesRequest(coordinates),
+        dateTime
+      )
+    );
+
+    return this.extractLocationNamesFromResponse(
+      response as ReverseLocationResponse[]
+    );
   }
 
   private buildCoordinatesParams(coordinates: Coordinates[]): number[][] {

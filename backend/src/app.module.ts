@@ -8,6 +8,7 @@ import { AuditLogModule } from '@modules/audit-log/audit-log.module';
 import { TrafficModule } from '@modules/traffic/traffic.module';
 import { WeatherForecastModule } from '@modules/weather-forecast/weather-forecast.module';
 import { GeoApifyModule } from '@modules/geoapify/geoapify.module';
+import { CacheModule } from '@modules/cache/cache.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { GeoApifyModule } from '@modules/geoapify/geoapify.module';
     AuditLogModule,
     TrafficModule,
     WeatherForecastModule,
-    GeoApifyModule
+    GeoApifyModule,
+    CacheModule
   ]
 })
 export class AppModule {}
