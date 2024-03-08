@@ -6,6 +6,7 @@ import {
   TrafficTransportImagesResponseBody
 } from './dto/traffic.dto';
 import { WeatherForecastService } from '@modules/weather-forecast/weather-forecast.service';
+import { GeoApifyService } from '@modules/geoapify/geoapify.service';
 
 @Injectable()
 export class TrafficService {
@@ -13,7 +14,8 @@ export class TrafficService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly weatherForecastService: WeatherForecastService
+    private readonly weatherForecastService: WeatherForecastService,
+    private readonly geoApifyService: GeoApifyService
   ) {
     this.client = new HTTPClient({
       baseURL: this.configService.get('sgApi').traffic
@@ -24,6 +26,12 @@ export class TrafficService {
     const trafficResponse = await this.sendTransportTrafficRequest(dateTime);
 
     const coordinates = this.extractCoordinatesFromResponse(trafficResponse);
+
+    const test = await this.geoApifyService.getLocationFromCoordinates(
+      coordinates
+    );
+
+    console.log(test);
 
     const locationsAvailable =
       await this.weatherForecastService.geoDecodeCoordinatesToLocations(
@@ -42,9 +50,7 @@ export class TrafficService {
 
     const { data } =
       await this.client.instance.get<TrafficTransportImagesResponseBody>(
-        `${
-          this.configService.get('sgApi').traffic
-        }/v1/transport/traffic-images`,
+        `${this.configService.get('sgApi').traffic}/traffic-images`,
         { params: { date_time: dateTime } }
       );
 

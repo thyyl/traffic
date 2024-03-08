@@ -32,6 +32,16 @@ export const configuration = () => ({
     weatherForecast: process.env.WEATHER_FORECAST_API
   },
 
+  mapBox: {
+    api: process.env.MAP_BOX_API,
+    accessToken: process.env.MAP_BOX_ACCESS_TOKEN
+  },
+
+  geoApify: {
+    api: process.env.GEOAPIFY_API,
+    apiKey: process.env.GEOAPIFY_API_KEY
+  },
+
   // ====================== ENV
   service: {
     port: parseInt(process.env.IDENTITY_SERVICE_PORT || '3334', 10),

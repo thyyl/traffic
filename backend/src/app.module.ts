@@ -7,6 +7,7 @@ import { SnakeNamingStrategy } from '@app/core/types';
 import { AuditLogModule } from '@modules/audit-log/audit-log.module';
 import { TrafficModule } from '@modules/traffic/traffic.module';
 import { WeatherForecastModule } from '@modules/weather-forecast/weather-forecast.module';
+import { GeoApifyModule } from '@modules/geoapify/geoapify.module';
 
 @Module({
   imports: [
@@ -47,7 +48,8 @@ import { WeatherForecastModule } from '@modules/weather-forecast/weather-forecas
     CoreModule,
     AuditLogModule,
     TrafficModule,
-    WeatherForecastModule
+    WeatherForecastModule,
+    GeoApifyModule
   ]
 })
 export class AppModule {}
