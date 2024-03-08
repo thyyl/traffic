@@ -6,6 +6,6 @@ export class AuditLog extends AbstractEntity {
   @Column()
   dateSearched: Date;
 
-  @Column()
-  location: string;
+  @Column({ nullable: true })
+  location?: string;
 }

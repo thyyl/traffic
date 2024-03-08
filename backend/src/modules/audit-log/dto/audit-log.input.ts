@@ -1,11 +1,11 @@
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateOneAuditLogInput {
   @IsNotEmpty()
   @IsDate()
   dateSearched: Date;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  location: string;
+  location?: string;
 }
