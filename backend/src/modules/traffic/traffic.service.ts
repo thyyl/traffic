@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   Coordinates,
+  TrafficLocationResponseBody,
   TrafficTransportImagesResponseBody
 } from './dto/traffic.dto';
 import {
@@ -12,6 +13,7 @@ import {
 import { QueryBus } from '@nestjs/cqrs';
 import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
 import { UtilsHelper } from '@app/common';
+import { TrafficTransportQueryException } from '@app/common/exceptions/traffic.exception';
 
 @Injectable()
 export class TrafficService {
@@ -38,7 +40,9 @@ export class TrafficService {
     );
   }
 
-  async getAllAvailableLocations(dateTime: string): Promise<string[]> {
+  async getAllAvailableLocations(
+    dateTime: string
+  ): Promise<TrafficLocationResponseBody[]> {
     const key = UtilsHelper.buildKey('TRAFFIC', 'TRAFFIC_ITEM', dateTime);
 
     const { data: trafficResponse } = await this.queryBus.execute(
@@ -50,33 +54,30 @@ export class TrafficService {
     );
 
     const coordinates = this.extractCoordinatesFromResponse(trafficResponse);
-
     const strategy =
       this.trafficLocationStrategy[TrafficLocationCode.GEO_APIFY];
-
-    const locationsAvailable = await strategy.getLocationsFromCoordinates(
-      dateTime,
-      coordinates
-    );
-
-    return Array.from(new Set<string>(locationsAvailable)).sort();
+    return strategy.getLocationsFromCoordinates(dateTime, coordinates);
   }
 
-  // TODO: WRAP IN TRY CATCH
   private async sendTransportTrafficRequest(
     dateTime: string
   ): Promise<TrafficTransportImagesResponseBody> {
-    Logger.log('[TrafficService] Sending Get Request with:', dateTime);
+    try {
+      Logger.log('[TrafficService] Sending Get Request with:', dateTime);
 
-    const { data } =
-      await this.client.instance.get<TrafficTransportImagesResponseBody>(
-        `${this.configService.get('sgApi').traffic}/traffic-images`,
-        { params: { date_time: dateTime } }
-      );
+      const { data } =
+        await this.client.instance.get<TrafficTransportImagesResponseBody>(
+          `${this.configService.get('sgApi').traffic}/traffic-images`,
+          { params: { date_time: dateTime } }
+        );
 
-    Logger.log('[TrafficService] Data is successfully requested:');
+      Logger.log('[TrafficService] Data is successfully requested:');
 
-    return data;
+      return data;
+    } catch (e) {
+      Logger.error(`[TrafficService] Error: ${e.message}`);
+      throw new TrafficTransportQueryException(e.message, '[TrafficService]');
+    }
   }
 
   private extractCoordinatesFromResponse({

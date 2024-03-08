@@ -24,7 +24,9 @@ export class GetReadAsideCachedDataHandler<T>
       );
       return { success: true, data };
     } catch (error) {
-      Logger.error(`Failed to find locations: ${error}`);
+      Logger.error(
+        `[CacheService] Failed to retrieve data from cache: ${error}`
+      );
       return { success: false, message: error.message, data: null };
     }
   }

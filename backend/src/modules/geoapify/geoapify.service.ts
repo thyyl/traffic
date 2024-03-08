@@ -1,4 +1,7 @@
-import { Coordinates } from '@modules/traffic/dto/traffic.dto';
+import {
+  Coordinates,
+  TrafficLocationResponseBody
+} from '@modules/traffic/dto/traffic.dto';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
@@ -10,6 +13,10 @@ import {
 import { UtilsHelper } from '@app/common';
 import { QueryBus } from '@nestjs/cqrs';
 import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
+import {
+  GeoApifyCommandException,
+  GeoApifyQueryException
+} from '@app/common/exceptions/geo-apify.exception';
 
 @Injectable()
 export class GeoApifyService {
@@ -19,21 +26,26 @@ export class GeoApifyService {
   ) {}
 
   async postReverseGeocodingRequest(coordinates: Coordinates[]): Promise<any> {
-    Logger.log('[GeoApifyService] Sending Post Request');
-    const coordinatesParams = this.buildCoordinatesParams(coordinates);
+    try {
+      Logger.log('[GeoApifyService] Sending Post Request');
+      const coordinatesParams = this.buildCoordinatesParams(coordinates);
 
-    const { data } = await axios.post<PostReverseResponseBody>(
-      `${
-        this.configService.get('geoApify').api
-      }/v1/batch/geocode/reverse?apiKey=${
-        this.configService.get('geoApify').apiKey
-      }`,
-      coordinatesParams
-    );
+      const { data } = await axios.post<PostReverseResponseBody>(
+        `${
+          this.configService.get('geoApify').api
+        }/v1/batch/geocode/reverse?apiKey=${
+          this.configService.get('geoApify').apiKey
+        }`,
+        coordinatesParams
+      );
 
-    Logger.log('[GeoApifyService] Data is successfully requested:');
+      Logger.log('[GeoApifyService] Data is successfully requested:');
 
-    return data;
+      return data;
+    } catch (error) {
+      Logger.error('[GeoApifyService] Error in sending Post Request');
+      throw new GeoApifyCommandException(error.message, '[GeoApifyService]');
+    }
   }
 
   async getLocationFromCoordinatesRequest(
@@ -43,29 +55,36 @@ export class GeoApifyService {
 
     Logger.log('[GeoApifyService] Extracting location from url:', url);
 
-    let response: GeoApifyResponse;
+    try {
+      let response: GeoApifyResponse;
 
-    while (true) {
-      const { data } = await axios.get<GeoApifyResponse>(url);
+      while (true) {
+        const { data } = await axios.get<GeoApifyResponse>(url);
 
-      Logger.log('[GeoApifyService] Data is successfully requested');
+        Logger.log('[GeoApifyService] Data is successfully requested');
 
-      if ('status' in data && data.status === 'pending') {
-        Logger.log('[GeoApifyService] Waiting for response');
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-      } else {
-        response = data;
-        break;
+        if ('status' in data && data.status === 'pending') {
+          Logger.log(
+            '[GeoApifyService] Data is processing. Waiting for response'
+          );
+          await new Promise((resolve) => setTimeout(resolve, 7500));
+        } else {
+          response = data;
+          break;
+        }
       }
-    }
 
-    return response;
+      return response;
+    } catch (error) {
+      Logger.error('[GeoApifyService] Error in getting location from url');
+      throw new GeoApifyQueryException(error.message, '[GeoApifyService]');
+    }
   }
 
   async getLocationFromCoordinates(
     dateTime: string,
     coordinates: Coordinates[]
-  ): Promise<string[]> {
+  ): Promise<TrafficLocationResponseBody[]> {
     const key = UtilsHelper.buildKey('GEO_APIFY', 'GEO_APIFY_ITEM', dateTime);
 
     const { data: response } = await this.queryBus.execute(
@@ -87,9 +106,11 @@ export class GeoApifyService {
 
   private extractLocationNamesFromResponse(
     response: ReverseLocationResponse[]
-  ): string[] {
-    return response.map(
-      (res) => res.suburb ?? res.city ?? res.county ?? res.state
-    );
+  ): TrafficLocationResponseBody[] {
+    return response.map((res) => ({
+      location: res.formatted,
+      latitude: res.query.lat,
+      longitude: res.query.lon
+    }));
   }
 }

@@ -1,7 +1,7 @@
-import { IsISO8601, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class WeatherForecastRequestBody {
-  @IsOptional()
-  @IsISO8601()
-  dateTime?: string;
+  @IsString()
+  @IsNotEmpty()
+  dateTime: string;
 }

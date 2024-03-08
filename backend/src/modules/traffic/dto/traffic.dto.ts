@@ -83,3 +83,9 @@ export class TrafficTransportImagesResponseBody {
   @ValidateNested()
   api_info: ApiInfo;
 }
+
+export class TrafficLocationResponseBody extends Coordinates {
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+}

@@ -9,6 +9,7 @@ import { TrafficModule } from '@modules/traffic/traffic.module';
 import { WeatherForecastModule } from '@modules/weather-forecast/weather-forecast.module';
 import { GeoApifyModule } from '@modules/geoapify/geoapify.module';
 import { CacheModule } from '@modules/cache/cache.module';
+import { SystemModule } from '@modules/system/system.module';
 
 @Module({
   imports: [
@@ -51,7 +52,8 @@ import { CacheModule } from '@modules/cache/cache.module';
     TrafficModule,
     WeatherForecastModule,
     GeoApifyModule,
-    CacheModule
+    CacheModule,
+    SystemModule
   ]
 })
 export class AppModule {}

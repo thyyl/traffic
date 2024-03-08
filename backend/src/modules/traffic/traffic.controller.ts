@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { TrafficService } from './traffic.service';
 import { TrafficTransportRequestBody } from './dto/traffic.input';
 import { CommandBus } from '@nestjs/cqrs';
@@ -12,8 +12,8 @@ export class TrafficController {
 
   @Get('/locations')
   @HttpCode(HttpStatus.OK)
-  async getAllAvailableLocations(@Body() body: TrafficTransportRequestBody) {
-    const { dateTime } = body;
+  async getAllAvailableLocations(@Query() query: TrafficTransportRequestBody) {
+    const { dateTime } = query;
     return this.trafficService.getAllAvailableLocations(dateTime);
   }
 }

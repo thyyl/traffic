@@ -1,5 +1,6 @@
 import { Injector } from '@app/common/helpers/injector.helper';
-import { Coordinates } from '../dto/traffic.dto';
+import { Coordinates, TrafficLocationResponseBody } from '../dto/traffic.dto';
+import { Logger } from '@nestjs/common';
 
 let weatherForecastService: import('@modules/weather-forecast/weather-forecast.service').WeatherForecastService;
 let geoApifyService: import('@modules/geoapify/geoapify.service').GeoApifyService;
@@ -15,7 +16,7 @@ interface TrafficLocationStrategyInterface {
   readonly getLocationsFromCoordinates: (
     dateTime: string,
     coordinates: Coordinates[]
-  ) => Promise<string[]>;
+  ) => Promise<TrafficLocationResponseBody[]>;
 }
 
 export class TrafficLocationStrategy {
@@ -32,7 +33,7 @@ export class TrafficLocationStrategy {
   async getLocationsFromCoordinates(
     dateTime: string,
     coordinates: Coordinates[]
-  ): Promise<string[]> {
+  ): Promise<TrafficLocationResponseBody[]> {
     return this.config.getLocationsFromCoordinates(dateTime, coordinates);
   }
 }
@@ -44,20 +45,29 @@ const WeatherForecastTrafficLocationStrategy = new TrafficLocationStrategy({
     const { WeatherForecastService } = await import(
       '@modules/weather-forecast/weather-forecast.service'
     );
+    const { GeoApifyService } = await import(
+      '@modules/geoapify/geoapify.service'
+    );
     weatherForecastService = injector.get(WeatherForecastService);
+    geoApifyService = injector.get(GeoApifyService);
   },
 
   async getLocationsFromCoordinates(
     dateTime: string,
     coordinates: Coordinates[]
   ) {
-    const locations =
-      await weatherForecastService.geoDecodeCoordinatesToLocations(
+    try {
+      return weatherForecastService.geoDecodeCoordinatesToLocations(
         dateTime,
         coordinates
       );
+    } catch (error) {
+      Logger.error(
+        '[WeatherForecastTrafficLocationStrategy] Error in getting location from coordinates'
+      );
 
-    return Array.from(new Set<string>(locations)).sort();
+      return geoApifyService.getLocationFromCoordinates(dateTime, coordinates);
+    }
   }
 });
 
@@ -75,12 +85,10 @@ const GeoApifyTrafficLocationStrategy = new TrafficLocationStrategy({
     dateTime: string,
     coordinates: Coordinates[]
   ) {
-    const locations = await geoApifyService.getLocationFromCoordinates(
+    return await geoApifyService.getLocationFromCoordinates(
       dateTime,
       coordinates
     );
-
-    return Array.from(new Set<string>(locations)).sort();
   }
 });
 
