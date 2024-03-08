@@ -72,8 +72,11 @@ export class UtilsHelper {
     return new model(entity as E, options);
   }
   public static buildKey(namespace: string, item: string, dateTime: string) {
-    const [timeKey] = dateTime.split(':');
+    const [hourKey, minutes] = dateTime.split(':');
 
-    return `${namespace}:${item}-${timeKey}`;
+    const quarter = 15;
+    const minuteKey = (Math.round(parseInt(minutes) / quarter) * quarter) % 60;
+
+    return `${namespace}:${item}-${hourKey}-${minuteKey}`;
   }
 }
