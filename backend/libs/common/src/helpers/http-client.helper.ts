@@ -1,6 +1,4 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { isEmpty } from 'lodash';
-import qs from 'qs';
 
 export class HTTPClient {
   instance: AxiosInstance;
@@ -12,7 +10,13 @@ export class HTTPClient {
     const defaultConfig = {
       timeout: SECONDS * MILLISECONDS,
       paramsSerializer: (params: any) => {
-        return qs.stringify(params, { arrayFormat: 'brackets' });
+        const searchParams = new URLSearchParams();
+        for (const key in params) {
+          if (params.hasOwnProperty(key) && params[key] !== undefined) {
+            searchParams.append(key, params[key]);
+          }
+        }
+        return searchParams.toString();
       }
     };
     this.instance = axios.create({
