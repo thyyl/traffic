@@ -8,6 +8,11 @@ export type RecordQueryOptions<T extends AbstractEntity> = {
   relations?: RelationPaths<T>;
 };
 
+export type RecordNormalQueryOptions = {
+  nullable?: boolean;
+  silence?: boolean;
+};
+
 // Write Options
 export type RecordMutateOptions = {
   silence?: boolean;

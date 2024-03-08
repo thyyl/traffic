@@ -53,9 +53,7 @@ export class GeoApifyService {
       }
     }
 
-    const locations = this.extractLocationNamesFromResponse(response as any);
-
-    return Array.from(new Set<string>(locations)).sort();
+    return this.extractLocationNamesFromResponse(response as any);
   }
 
   private buildCoordinatesParams(coordinates: Coordinates[]): number[][] {
