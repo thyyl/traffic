@@ -92,9 +92,10 @@ export const configuration = () => ({
     // REDIS
     redis: {
       max: process.env.MAX_ITEM_IN_CACHE,
-      host: process.env.REDIS_CACHE_HOST,
-      port: process.env.REDIS_CACHE_PORT,
-      auth_pass: process.env.REDIS_CACHE_PASSWORD
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+      auth_pass: process.env.REDIS_CACHE_PASSWORD,
+      ttl: process.env.REDIS_CACHE_TTL
     }
   }
 });

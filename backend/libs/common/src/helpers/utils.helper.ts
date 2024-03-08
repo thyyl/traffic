@@ -71,4 +71,9 @@ export class UtilsHelper {
 
     return new model(entity as E, options);
   }
+  public static buildKey(namespace: string, item: string, dateTime: string) {
+    const [timeKey] = dateTime.split(':');
+
+    return `${namespace}:${item}-${timeKey}`;
+  }
 }
