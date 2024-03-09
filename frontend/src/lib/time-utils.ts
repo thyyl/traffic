@@ -149,3 +149,12 @@ export function getArrowByType(
       return "00";
   }
 }
+
+export const getNearestQuarter = (time: Date) => {
+  const [timeSelected] = time!.toTimeString().split(" ");
+  const timeSplit = timeSelected.split(":");
+  const minutes = timeSplit[1];
+  const minutesRounded = Math.round(parseInt(minutes) / 15) * 15;
+  const meridiem = parseInt(timeSplit[0]) >= 12 ? "PM" : "AM";
+  return `${timeSplit[0]}:${minutesRounded} ${meridiem}`;
+};

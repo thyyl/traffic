@@ -4,36 +4,33 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-const notifications = [
-  {
-    title: "Your call has been confirmed.",
-    description: "1 hour ago",
-  },
-  {
-    title: "You have a new message!",
-    description: "1 hour ago",
-  },
-  {
-    title: "Your subscription is expiring soon!",
-    description: "2 hours ago",
-  },
-];
+import { Steps, TrafficLocation } from "@/lib/types";
+import { Fragment } from "react";
+import { Skeleton } from "./skeleton";
 
 interface LocationSection extends React.ComponentProps<typeof Card> {
   className?: string;
-  locations: string[];
+  trafficLocations?: TrafficLocation[];
+  isLoading: boolean;
+  setSelectedLocation: React.Dispatch<
+    React.SetStateAction<TrafficLocation | undefined>
+  >;
 }
 
 export function LocationSection({
   className,
-  locations,
+  trafficLocations,
+  isLoading,
+  setSelectedLocation,
   ...props
 }: LocationSection) {
+  const handleOnClick = (item: TrafficLocation) => {
+    setSelectedLocation(item);
+  };
+
   return (
     <Card
       className={cn(
@@ -42,19 +39,30 @@ export function LocationSection({
       )}
       {...props}
     >
-      <CardHeader>
-        <CardTitle>Locations Available</CardTitle>
-        <CardDescription>
-          There is {locations.length} locations available
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="grid gap-4">
-        {locations.map((location, index) => (
-          <Button key={index} variant="outline">
-            {location}
-          </Button>
-        ))}
-      </CardContent>
+      {trafficLocations ? (
+        <Fragment>
+          <CardHeader>
+            <CardTitle>Locations Available</CardTitle>
+            <CardDescription>
+              There is {trafficLocations?.length} locations available
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-4">
+            {trafficLocations?.map((item, index) => (
+              <Button
+                key={index + item.location}
+                variant="outline"
+                disabled={isLoading}
+                onClick={() => handleOnClick(item)}
+              >
+                {item.location}
+              </Button>
+            ))}
+          </CardContent>
+        </Fragment>
+      ) : (
+        <Skeleton className="w-[650px] h-[25rem] md:min-w-12" />
+      )}
     </Card>
   );
 }
