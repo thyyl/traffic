@@ -3,22 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RecentSearches } from "@/lib/types";
 import React, { Fragment } from "react";
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "../components/ui/skeleton";
 
-interface RecommendationSection extends React.ComponentProps<typeof Card> {
+interface RecommendationContainer extends React.ComponentProps<typeof Card> {
   className?: string;
   searches?: RecentSearches[];
   isLoading: boolean;
   handleRecommendationsPressed: (item: RecentSearches) => void;
 }
 
-export function RecommendationSection({
+export function RecommendationContainer({
   className,
   searches,
   isLoading,
   handleRecommendationsPressed,
   ...props
-}: RecommendationSection) {
+}: RecommendationContainer) {
   const formatLocation = (location: string) => {
     return location.split(",")[0];
   };

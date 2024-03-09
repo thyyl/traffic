@@ -7,11 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Steps, TrafficLocation } from "@/lib/types";
+import { TrafficLocation } from "@/lib/types";
 import { Fragment } from "react";
-import { Skeleton } from "./skeleton";
+import { Skeleton } from "../components/ui/skeleton";
 
-interface LocationSection extends React.ComponentProps<typeof Card> {
+interface LocationContainer extends React.ComponentProps<typeof Card> {
   className?: string;
   trafficLocations?: TrafficLocation[];
   isLoading: boolean;
@@ -20,13 +20,13 @@ interface LocationSection extends React.ComponentProps<typeof Card> {
   >;
 }
 
-export function LocationSection({
+export function LocationContainer({
   className,
   trafficLocations,
   isLoading,
   setSelectedLocation,
   ...props
-}: LocationSection) {
+}: LocationContainer) {
   const handleOnClick = (item: TrafficLocation) => {
     setSelectedLocation(item);
   };

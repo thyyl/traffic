@@ -2,10 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { ErrorComponent } from "@/components/ui/error";
-import { LocationSection } from "@/components/ui/location-section";
-import { RecommendationSection } from "@/components/ui/recommendation-section";
+import { LocationContainer } from "@/container/location-container";
+import { RecommendationContainer } from "@/container/recommendation-container";
 import { TimePicker } from "@/components/ui/time-picker";
-import { TrafficContainer } from "@/components/ui/traffic-container";
+import { TrafficContainer } from "@/container/traffic-container";
 import { useToast } from "@/components/ui/use-toast";
 import { WeatherCard } from "@/components/ui/weather-card";
 import { useLocationDetails } from "@/hooks/location-details";
@@ -109,7 +109,7 @@ export default function Home() {
         <div className="gap-y-8 flex flex-col">
           {[Steps.DETAILS, Steps.LOCATION].includes(steps) ? (
             <div className="flex lg:flex-row flex-col w-full items-center">
-              <LocationSection
+              <LocationContainer
                 trafficLocations={data}
                 isLoading={isLoading || detailsIsLoading}
                 setSelectedLocation={setSelectedLocation}
@@ -126,7 +126,7 @@ export default function Home() {
               <h3 className="text-2xl font-semibold leading-none tracking-tight">
                 Please start by selecting a date and time
               </h3>
-              <RecommendationSection
+              <RecommendationContainer
                 searches={recentSearches}
                 isLoading={recentSearchesIsLoading}
                 handleRecommendationsPressed={handleRecommendationsPressed}
