@@ -2,6 +2,7 @@ import { AuditLog } from '@modules/audit-log/audit-log.entity';
 import { AuditLogService } from '@modules/audit-log/audit-log.service';
 import { Injectable } from '@nestjs/common';
 import { Between } from 'typeorm';
+import { format } from 'date-fns';
 
 @Injectable()
 export class SystemService {
@@ -82,12 +83,7 @@ export class SystemService {
       }
     }
 
-    return maxIntervalStartTime
-      ? maxIntervalStartTime.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      : '';
+    return format(maxIntervalStartTime, 'yyyy-MM-dd HH:mm:ss');
   }
 
   private formatDateTime(dateTime: string): Date {
