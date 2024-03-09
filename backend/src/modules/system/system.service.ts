@@ -17,7 +17,8 @@ export class SystemService {
   async getPeriodicLogs(
     startTime: string,
     endTime: string,
-    take = 10000
+    take = 10000,
+    order: 'ASC' | 'DESC' = 'DESC'
   ): Promise<AuditLog[]> {
     const [formattedStartTime, formattedEndTime] = [
       this.formatDateTime(startTime),
@@ -28,7 +29,7 @@ export class SystemService {
 
     return this.auditLogService.findManyAuditLogs({
       where: { createdAt: Between(formattedStartTime, formattedEndTime) },
-      order: { createdAt: 'DESC' },
+      order: { createdAt: order },
       take
     });
   }
@@ -38,11 +39,11 @@ export class SystemService {
     endTime: string,
     interval: string
   ): Promise<string> {
-    const logs = await this.getPeriodicLogs(startTime, endTime);
+    const logs = await this.getPeriodicLogs(startTime, endTime, 10000, 'ASC');
     return this.findPeakStartTime(logs, parseInt(interval));
   }
 
-  async findPeakStartTime(logs: AuditLog[], interval: number) {
+  findPeakStartTime(logs: AuditLog[], interval: number): string {
     const timeLogs = logs.map(({ createdAt }) => createdAt);
     const logsLength = timeLogs.length;
 
