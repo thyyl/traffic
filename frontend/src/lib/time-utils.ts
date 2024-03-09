@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 /**
  * regular expression to check for valid hour format (01-23)
  */
@@ -155,6 +157,6 @@ export const getNearestQuarter = (time: Date) => {
   const timeSplit = timeSelected.split(":");
   const minutes = timeSplit[1];
   const minutesRounded = Math.round(parseInt(minutes) / 15) * 15;
-  const meridiem = parseInt(timeSplit[0]) >= 12 ? "PM" : "AM";
-  return `${timeSplit[0]}:${minutesRounded} ${meridiem}`;
+
+  return `${timeSplit[0]}:${minutesRounded === 0 ? "00" : minutesRounded}`;
 };

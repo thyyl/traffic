@@ -14,6 +14,7 @@ import { useTrafficLocations } from "@/hooks/traffic-location";
 import { RecentSearches, Steps, TrafficLocation } from "@/lib/types";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import { format } from "date-fns";
 
 export default function Home() {
   // ==================== STATES
@@ -28,7 +29,7 @@ export default function Home() {
   const { setTheme } = useTheme();
   setTheme("dark");
 
-  const { data, isLoading, error } = useTrafficLocations({
+  const { data, isLoading, error, refetch } = useTrafficLocations({
     dateTime: getLocationsDateTime,
     enabled: !!getLocationsDateTime,
   });
@@ -53,6 +54,8 @@ export default function Home() {
 
   // ==================== EVENTS
   const handleGetLocations = () => {
+    setSelectedLocation(undefined);
+
     if (!date || !time) {
       toast({
         title: "Invalid Date/Time",
@@ -62,8 +65,12 @@ export default function Home() {
       return;
     }
 
-    const [dateSelected] = date?.toISOString().split("T");
+    const dateSelected = format(date, "yyyy-MM-dd");
     const [timeSelected] = time?.toTimeString().split(" ");
+
+    if (getLocationsDateTime === `${dateSelected}T${timeSelected}`) {
+      refetch();
+    }
 
     setSteps(Steps.LOCATION);
     setGetLocationsDateTime(`${dateSelected}T${timeSelected}`);

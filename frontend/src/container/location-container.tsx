@@ -34,7 +34,7 @@ export function LocationContainer({
   return (
     <Card
       className={cn(
-        "w-[650px] h-[25rem] md:min-w-12 overflow-scroll",
+        "w-[650px] h-[25rem] md:min-w-12 overflow-scroll bg-black",
         className
       )}
       {...props}
