@@ -11,15 +11,11 @@ import { QueryBus } from '@nestjs/cqrs';
 import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
 import { UtilsHelper } from '@app/common';
 import { WeatherForecastQueryException } from '@app/common/exceptions/weather-forecast.exception';
-import { TrafficLocationStrategy } from '@modules/traffic/strategy/traffic-location.strategy';
 import { TrafficLocationResponseBody } from '@modules/traffic/dto/traffic.dto';
 
 @Injectable()
 export class WeatherForecastService {
   private client: HTTPClient;
-  private readonly trafficLocationStrategy: {
-    [code: string]: TrafficLocationStrategy;
-  };
 
   constructor(
     private readonly configService: ConfigService,
@@ -28,15 +24,6 @@ export class WeatherForecastService {
     this.client = new HTTPClient({
       baseURL: this.configService.get('sgApi').weatherForecast
     });
-    this.trafficLocationStrategy = (
-      this.configService.get('strategy').locations as TrafficLocationStrategy[]
-    ).reduce(
-      (hash, strategy) =>
-        Array.isArray(strategy.code)
-          ? strategy.code.map((subCode) => ({ ...hash, [subCode]: strategy }))
-          : { ...hash, [strategy.code]: strategy },
-      {}
-    );
   }
 
   async sendWeatherForecastRequest(

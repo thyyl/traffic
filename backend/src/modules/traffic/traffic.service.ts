@@ -3,6 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   Coordinates,
+  TrafficLocationDetailsResponseBody,
   TrafficLocationResponseBody,
   TrafficTransportImagesResponseBody
 } from './dto/traffic.dto';
@@ -10,10 +11,11 @@ import {
   TrafficLocationCode,
   TrafficLocationStrategy
 } from './strategy/traffic-location.strategy';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetReadAsideCachedData } from '@modules/cache/cqrs/cache.cqrs.input';
 import { UtilsHelper } from '@app/common';
 import { TrafficTransportQueryException } from '@app/common/exceptions/traffic.exception';
+import { CreateOneAuditLogCommand } from '@modules/audit-log/cqrs/audit-log.cqrs.input';
 
 @Injectable()
 export class TrafficService {
@@ -24,7 +26,8 @@ export class TrafficService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly queryBus: QueryBus
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus
   ) {
     this.client = new HTTPClient({
       baseURL: this.configService.get('sgApi').traffic
@@ -59,6 +62,30 @@ export class TrafficService {
     return strategy.getLocationsFromCoordinates(dateTime, coordinates);
   }
 
+  async getLocationDetails(
+    dateTime: string,
+    location: string,
+    longitude: number,
+    latitude: number
+  ): Promise<TrafficLocationDetailsResponseBody> {
+    const key = UtilsHelper.buildKey('TRAFFIC', 'TRAFFIC_ITEM', dateTime);
+
+    this.fireAuditLogCommand(dateTime, location, longitude, latitude);
+
+    const { data: trafficResponse } = await this.queryBus.execute(
+      new GetReadAsideCachedData<TrafficTransportImagesResponseBody>(
+        key,
+        () => this.sendTransportTrafficRequest(dateTime),
+        dateTime
+      )
+    );
+
+    return this.compareLocationSelectedByCoordinates(trafficResponse, {
+      latitude,
+      longitude
+    });
+  }
+
   private async sendTransportTrafficRequest(
     dateTime: string
   ): Promise<TrafficTransportImagesResponseBody> {
@@ -67,7 +94,7 @@ export class TrafficService {
 
       const { data } =
         await this.client.instance.get<TrafficTransportImagesResponseBody>(
-          `${this.configService.get('sgApi').traffic}/traffic-images`,
+          `/traffic-images`,
           { params: { date_time: dateTime } }
         );
 
@@ -80,6 +107,33 @@ export class TrafficService {
     }
   }
 
+  private async compareLocationSelectedByCoordinates(
+    { items }: TrafficTransportImagesResponseBody,
+    { longitude, latitude }: Coordinates
+  ): Promise<TrafficLocationDetailsResponseBody> {
+    const location = items
+      .map((item) => item.cameras)
+      .flat()
+      .map(({ image, location }) => ({
+        image,
+        latitude: location.latitude,
+        longitude: location.longitude
+      }))
+      .find(
+        ({ latitude: mappedLatitude, longitude: mappedLongitude }) =>
+          mappedLongitude === longitude && mappedLatitude === latitude
+      );
+
+    if (!location) {
+      throw new TrafficTransportQueryException(
+        'Location not found',
+        '[TrafficService]'
+      );
+    }
+
+    return location;
+  }
+
   private extractCoordinatesFromResponse({
     items
   }: TrafficTransportImagesResponseBody): Coordinates[] {
@@ -90,5 +144,22 @@ export class TrafficService {
       .flat()
       .map((camera) => camera.location)
       .map((location) => location);
+  }
+
+  private async fireAuditLogCommand(
+    dateTime: string,
+    location: string,
+    longitude: number,
+    latitude: number
+  ) {
+    this.commandBus.execute(
+      new CreateOneAuditLogCommand({
+        input: {
+          dateSearched: new Date(dateTime),
+          location: `${location},${latitude},${longitude}`
+        },
+        options: { silence: true }
+      })
+    );
   }
 }

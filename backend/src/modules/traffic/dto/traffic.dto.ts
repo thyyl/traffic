@@ -89,3 +89,9 @@ export class TrafficLocationResponseBody extends Coordinates {
   @IsNotEmpty()
   location: string;
 }
+
+export class TrafficLocationDetailsResponseBody extends Coordinates {
+  @IsNotEmpty()
+  @IsString()
+  image: string;
+}

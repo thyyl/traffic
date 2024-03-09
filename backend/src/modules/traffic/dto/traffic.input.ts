@@ -1,7 +1,16 @@
-import { IsISO8601, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
+import { Coordinates } from './traffic.dto';
 
-export class TrafficTransportRequestBody {
-  @IsOptional()
-  @IsISO8601()
-  dateTime?: string;
+export class TrafficTransportRequestQuery {
+  @IsNotEmpty()
+  @IsString()
+  dateTime: string;
+}
+
+export class TrafficTransportDetailsRequestQuery extends TrafficTransportRequestQuery {}
+
+export class TrafficTransportDetailsRequestBody extends Coordinates {
+  @IsString()
+  @IsNotEmpty()
+  location: string;
 }
