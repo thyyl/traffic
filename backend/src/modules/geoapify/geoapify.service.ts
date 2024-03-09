@@ -110,7 +110,8 @@ export class GeoApifyService {
     return response.map((res) => ({
       location: res.formatted,
       latitude: res.query.lat,
-      longitude: res.query.lon
+      longitude: res.query.lon,
+      weatherForecast: ''
     }));
   }
 }

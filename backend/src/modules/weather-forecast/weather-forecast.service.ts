@@ -66,6 +66,8 @@ export class WeatherForecastService {
       )
     );
 
+    const { items } = weatherData;
+
     const areaMetadata = this.extractCoordinatesFromResponse(weatherData);
 
     return coordinates.map((coordinate) => {
@@ -76,7 +78,12 @@ export class WeatherForecastService {
 
       if (area) {
         const { name } = area;
-        return { location: name, ...coordinate };
+        const forecast = items[0].forecasts.find(({ area }) => area === name);
+        return {
+          location: name,
+          ...coordinate,
+          weatherForecast: forecast.forecast
+        };
       }
     });
   }

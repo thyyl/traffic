@@ -8,4 +8,10 @@ export class AuditLog extends AbstractEntity {
 
   @Column({ nullable: true })
   location?: string;
+
+  @Column({ nullable: true, type: 'float' })
+  longitude?: number;
+
+  @Column({ nullable: true, type: 'float' })
+  latitude?: number;
 }

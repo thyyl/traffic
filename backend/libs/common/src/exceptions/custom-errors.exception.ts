@@ -1,6 +1,8 @@
+import { HttpException, HttpStatus } from '@nestjs/common';
+
 export type ErrorLogLevel = 'warn' | 'error';
 
-export class BaseException extends Error {
+export class BaseException extends HttpException {
   public errorLogLevel: ErrorLogLevel = 'error';
   public internalLog?: string;
   public errorCode: string;
@@ -11,7 +13,7 @@ export class BaseException extends Error {
     componentError: string,
     errorData?: string | string[] | Record<string, any>
   ) {
-    super(message);
+    super(message, HttpStatus.BAD_REQUEST);
     this.errorCode = `${componentError}`;
     this.errorData = errorData;
   }

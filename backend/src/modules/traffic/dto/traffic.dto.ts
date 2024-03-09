@@ -88,6 +88,10 @@ export class TrafficLocationResponseBody extends Coordinates {
   @IsString()
   @IsNotEmpty()
   location: string;
+
+  @IsNotEmpty()
+  @IsString()
+  weatherForecast: string;
 }
 
 export class TrafficLocationDetailsResponseBody extends Coordinates {

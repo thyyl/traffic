@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Coordinates } from './traffic.dto';
 
 export class TrafficTransportRequestQuery {
@@ -7,7 +7,17 @@ export class TrafficTransportRequestQuery {
   dateTime: string;
 }
 
-export class TrafficTransportDetailsRequestQuery extends TrafficTransportRequestQuery {}
+export class TrafficTransportDetailsRequestQuery extends TrafficTransportRequestQuery {
+  @IsString()
+  @IsNotEmpty()
+  location: string;
+
+  @IsNotEmpty()
+  latitude: string;
+
+  @IsNotEmpty()
+  longitude: string;
+}
 
 export class TrafficTransportDetailsRequestBody extends Coordinates {
   @IsString()

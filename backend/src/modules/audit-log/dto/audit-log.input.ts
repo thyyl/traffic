@@ -1,4 +1,10 @@
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString
+} from 'class-validator';
 
 export class CreateOneAuditLogInput {
   @IsNotEmpty()
@@ -8,4 +14,12 @@ export class CreateOneAuditLogInput {
   @IsOptional()
   @IsString()
   location?: string;
+
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
 }

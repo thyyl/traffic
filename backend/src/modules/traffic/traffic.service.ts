@@ -57,8 +57,7 @@ export class TrafficService {
     );
 
     const coordinates = this.extractCoordinatesFromResponse(trafficResponse);
-    const strategy =
-      this.trafficLocationStrategy[TrafficLocationCode.GEO_APIFY];
+    const strategy = this.trafficLocationStrategy[TrafficLocationCode.SG_DATA];
     return strategy.getLocationsFromCoordinates(dateTime, coordinates);
   }
 
@@ -156,7 +155,9 @@ export class TrafficService {
       new CreateOneAuditLogCommand({
         input: {
           dateSearched: new Date(dateTime),
-          location: `${location},${latitude},${longitude}`
+          location,
+          latitude,
+          longitude
         },
         options: { silence: true }
       })

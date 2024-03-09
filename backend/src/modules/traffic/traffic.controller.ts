@@ -1,14 +1,6 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Query
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { TrafficService } from './traffic.service';
 import {
-  TrafficTransportDetailsRequestBody,
   TrafficTransportDetailsRequestQuery,
   TrafficTransportRequestQuery
 } from './dto/traffic.input';
@@ -31,17 +23,15 @@ export class TrafficController {
   @Get('/location-details')
   @HttpCode(HttpStatus.OK)
   async getLocationDetails(
-    @Query() query: TrafficTransportDetailsRequestQuery,
-    @Body() body: TrafficTransportDetailsRequestBody
+    @Query() query: TrafficTransportDetailsRequestQuery
   ) {
-    const { dateTime } = query;
-    const { location, longitude, latitude } = body;
+    const { dateTime, location, longitude, latitude } = query;
 
     return this.trafficService.getLocationDetails(
       dateTime,
       location,
-      longitude,
-      latitude
+      parseFloat(longitude),
+      parseFloat(latitude)
     );
   }
 }
