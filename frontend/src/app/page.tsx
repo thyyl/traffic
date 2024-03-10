@@ -105,6 +105,11 @@ export default function Home() {
     setGetLocationsDateTime(`${dateSelected}T${timeSelected}`);
   };
 
+  const handleLocationSelected = (location: TrafficLocation) => {
+    setSelectedLocation(location);
+    setSteps(Steps.DETAILS);
+  };
+
   // ==================== VIEWS
   return (
     <div className="flex flex-col justify-center items-start my-8 md:mx-32 gap-y-8">
@@ -125,7 +130,7 @@ export default function Home() {
               <LocationContainer
                 trafficLocations={data}
                 isLoading={isLoading || detailsIsLoading}
-                setSelectedLocation={setSelectedLocation}
+                handleLocationSelected={handleLocationSelected}
               />
               <WeatherCard
                 isLoading={isLoading || detailsIsLoading}

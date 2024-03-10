@@ -108,7 +108,7 @@ export class GeoApifyService {
     response: ReverseLocationResponse[]
   ): TrafficLocationResponseBody[] {
     return response.map((res) => ({
-      location: res.formatted,
+      location: res.formatted.split(', ').slice(0, 2).join(', ').trim(),
       latitude: res.query.lat,
       longitude: res.query.lon,
       weatherForecast: ''

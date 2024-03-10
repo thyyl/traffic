@@ -15,22 +15,16 @@ interface LocationContainer extends React.ComponentProps<typeof Card> {
   className?: string;
   trafficLocations?: TrafficLocation[];
   isLoading: boolean;
-  setSelectedLocation: React.Dispatch<
-    React.SetStateAction<TrafficLocation | undefined>
-  >;
+  handleLocationSelected: (item: TrafficLocation) => void;
 }
 
 export function LocationContainer({
   className,
   trafficLocations,
   isLoading,
-  setSelectedLocation,
+  handleLocationSelected,
   ...props
 }: LocationContainer) {
-  const handleOnClick = (item: TrafficLocation) => {
-    setSelectedLocation(item);
-  };
-
   return (
     <Card
       className={cn(
@@ -53,7 +47,7 @@ export function LocationContainer({
                 key={index + item.location}
                 variant="outline"
                 disabled={isLoading}
-                onClick={() => handleOnClick(item)}
+                onClick={() => handleLocationSelected(item)}
               >
                 {item.location}
               </Button>
