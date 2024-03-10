@@ -17,6 +17,9 @@ import { useState } from "react";
 import { format } from "date-fns";
 
 export default function Home() {
+  // ==================== CONSTANTS
+  const localStorageKey = "RECENT-SEARCHES";
+
   // ==================== STATES
   const [getLocationsDateTime, setGetLocationsDateTime] = useState<string>();
   const [steps, setSteps] = useState<Steps>(Steps.DATE);
@@ -68,20 +71,30 @@ export default function Home() {
     const dateSelected = format(date, "yyyy-MM-dd");
     const [timeSelected] = time?.toTimeString().split(" ");
 
-    if (getLocationsDateTime === `${dateSelected}T${timeSelected}`) {
+    const formattedDate = `${dateSelected}T${timeSelected}`;
+
+    if (getLocationsDateTime === formattedDate) {
       refetch();
     }
 
+    handleLocalStorage(formattedDate);
+
     setSteps(Steps.LOCATION);
-    setGetLocationsDateTime(`${dateSelected}T${timeSelected}`);
+    setGetLocationsDateTime(formattedDate);
   };
 
-  const handleRecommendationsPressed = ({
-    dateSearched,
-    location,
-    latitude,
-    longitude,
-  }: RecentSearches) => {
+  const handleLocalStorage = (formattedDate: string) => {
+    const items: string[] = JSON.parse(
+      localStorage.getItem(localStorageKey) || "[]"
+    );
+
+    items.length >= 5 && items.pop();
+    items.unshift(formattedDate);
+
+    localStorage.setItem("recent-searches", JSON.stringify(items));
+  };
+
+  const handleRecommendationsPressed = (dateSearched: string) => {
     setDate(new Date(dateSearched));
     setTime(new Date(dateSearched));
 
@@ -90,13 +103,6 @@ export default function Home() {
 
     setSteps(Steps.LOCATION);
     setGetLocationsDateTime(`${dateSelected}T${timeSelected}`);
-
-    setSelectedLocation({
-      location,
-      latitude,
-      longitude,
-      weatherForecast: "cloudy",
-    });
   };
 
   // ==================== VIEWS
@@ -136,6 +142,13 @@ export default function Home() {
               <RecommendationContainer
                 searches={recentSearches}
                 isLoading={recentSearchesIsLoading}
+                title="Popular Searches"
+                handleRecommendationsPressed={handleRecommendationsPressed}
+              />
+              <RecommendationContainer
+                searches={recentSearches}
+                isLoading={recentSearchesIsLoading}
+                title="Your Recent Searches"
                 handleRecommendationsPressed={handleRecommendationsPressed}
               />
             </div>
