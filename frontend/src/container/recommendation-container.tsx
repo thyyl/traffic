@@ -52,7 +52,7 @@ export function RecommendationContainer({
                     disabled={isLoading}
                     onClick={() => handleRecommendationsPressed(date)}
                   >
-                    {formatDate(date)}
+                    Search on Date: {formatDate(date)}
                   </Button>
                 );
               })
