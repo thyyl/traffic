@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { BullModule } from '@nestjs/bull';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CoreModule } from '@app/core';
@@ -40,13 +39,7 @@ import { SystemModule } from '@modules/system/system.module';
         };
       }
     }),
-    BullModule.forRootAsync({
-      imports: [CoreModule],
-      useFactory: async (configService: ConfigService) => {
-        return configService.get('bull');
-      },
-      inject: [ConfigService]
-    }),
+
     CoreModule,
     AuditLogModule,
     TrafficModule,

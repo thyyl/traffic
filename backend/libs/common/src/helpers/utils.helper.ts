@@ -1,4 +1,3 @@
-import * as bcrypt from 'bcrypt';
 import isArray from 'lodash/isArray';
 
 /**
@@ -14,16 +13,6 @@ import isArray from 'lodash/isArray';
  */
 export class UtilsHelper {
   /**
-   * generate hash from password or string
-   * @param {string} password
-   * @returns {string}
-   */
-  static async generateHash(password: string): Promise<string> {
-    const SALT_ROUNDS = 10;
-    return bcrypt.hash(password, SALT_ROUNDS);
-  }
-
-  /**
    * generate random string
    * @param length
    */
@@ -33,16 +22,6 @@ export class UtilsHelper {
       .replace(/[^a-zA-Z0-9]+/g, '')
       .substr(0, length);
   }
-  /**
-   * validate text with hash
-   * @param {string} password
-   * @param {string} hash
-   * @returns {Promise<boolean>}
-   */
-  static validateHash(password: string, hash: string): Promise<boolean> {
-    return bcrypt.compare(password, hash || '');
-  }
-
   /**
    * convert entity to dto class instance
    * @param {{new(entity: E, options: any): T}} model
