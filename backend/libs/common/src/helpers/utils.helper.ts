@@ -58,4 +58,23 @@ export class UtilsHelper {
 
     return `${namespace}:${item}-${hourKey}-${minuteKey}`;
   }
+  public static getKeyWithHighestValue(map: {
+    [key: string]: number;
+  }): string | null {
+    if (!map || Object.keys(map).length === 0) {
+      return null;
+    }
+
+    let maxValue = -Infinity;
+    let maxKey = '';
+
+    for (const [key, value] of Object.entries(map)) {
+      if (value > maxValue) {
+        maxValue = value;
+        maxKey = key;
+      }
+    }
+
+    return maxKey;
+  }
 }
