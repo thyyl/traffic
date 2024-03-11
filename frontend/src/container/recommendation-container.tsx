@@ -34,13 +34,15 @@ export function RecommendationContainer({
       )}
       {...props}
     >
-      {searches ? (
+      {isLoading ? (
+        <Skeleton className="w-[650px] h-[25rem] md:min-w-12" />
+      ) : (
         <Fragment>
           <CardHeader>
             <CardTitle>{title}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
-            {searches.length ? (
+            {(searches || []).length ? (
               searches?.map((item, index) => {
                 const date =
                   typeof item === "string" ? item : item.dateSearched;
@@ -63,8 +65,6 @@ export function RecommendationContainer({
             )}
           </CardContent>
         </Fragment>
-      ) : (
-        <Skeleton className="w-[650px] h-[25rem] md:min-w-12" />
       )}
     </Card>
   );

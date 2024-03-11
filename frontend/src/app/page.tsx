@@ -11,7 +11,7 @@ import { WeatherCard } from "@/components/ui/weather-card";
 import { useLocationDetails } from "@/hooks/location-details";
 import { useRecentSearches } from "@/hooks/recent-searches";
 import { useTrafficLocations } from "@/hooks/traffic-location";
-import { RecentSearches, Steps, TrafficLocation } from "@/lib/types";
+import { Steps, TrafficLocation } from "@/lib/types";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -84,15 +84,23 @@ export default function Home() {
   };
 
   const handleLocalStorage = (formattedDate: string) => {
-    const items: string[] = JSON.parse(
-      localStorage.getItem(localStorageKey) || "[]"
-    );
+    const items = localStorage.getItem(localStorageKey);
 
-    items.length >= 5 && items.pop();
-    items.unshift(formattedDate);
+    if (items) {
+      const parsedItems: string[] = JSON.parse(items) ?? [];
+      if (parsedItems.length >= 5) {
+        parsedItems.pop();
+      }
+      parsedItems.unshift(formattedDate);
+      localStorage.setItem(localStorageKey, JSON.stringify(parsedItems));
+    } else {
+      localStorage.setItem(localStorageKey, JSON.stringify([formattedDate]));
+    }
 
-    localStorage.setItem("recent-searches", JSON.stringify(items));
+    return;
   };
+
+  console.log(localStorage.getItem(localStorageKey));
 
   const handleRecommendationsPressed = (dateSearched: string) => {
     setDate(new Date(dateSearched));
@@ -151,7 +159,9 @@ export default function Home() {
                 handleRecommendationsPressed={handleRecommendationsPressed}
               />
               <RecommendationContainer
-                searches={recentSearches}
+                searches={JSON.parse(
+                  localStorage.getItem(localStorageKey) ?? "[]"
+                )}
                 isLoading={recentSearchesIsLoading}
                 title="Your Recent Searches"
                 handleRecommendationsPressed={handleRecommendationsPressed}
