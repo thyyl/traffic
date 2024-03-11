@@ -57,7 +57,8 @@ export class TrafficService {
     );
 
     const coordinates = this.extractCoordinatesFromResponse(trafficResponse);
-    const strategy = this.trafficLocationStrategy[TrafficLocationCode.SG_DATA];
+    const strategy =
+      this.trafficLocationStrategy[TrafficLocationCode.GEO_APIFY];
     return strategy.getLocationsFromCoordinates(dateTime, coordinates);
   }
 

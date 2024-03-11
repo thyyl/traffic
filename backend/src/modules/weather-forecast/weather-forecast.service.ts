@@ -88,6 +88,45 @@ export class WeatherForecastService {
     });
   }
 
+  async getWeatherForecast(
+    data: TrafficLocationResponseBody[],
+    dateTime: string
+  ): Promise<TrafficLocationResponseBody[]> {
+    Logger.log('[WeatherForecastService] Extracting coordinates from response');
+
+    const key = UtilsHelper.buildKey('WEATHER', 'WEATHER_ITEM', dateTime);
+
+    const { data: weatherData } = await this.queryBus.execute(
+      new GetReadAsideCachedData<WeatherForecastResponseBody>(
+        key,
+        () => this.sendWeatherForecastRequest(dateTime),
+        dateTime
+      )
+    );
+
+    const { items } = weatherData;
+
+    const areaMetadata = this.extractCoordinatesFromResponse(weatherData);
+
+    return data.map(({ latitude, longitude, location }) => {
+      const area = DistanceCalculator.getNearestCoordinates(
+        { latitude, longitude },
+        areaMetadata
+      );
+
+      if (area) {
+        const { name } = area;
+        const forecast = items[0].forecasts.find(({ area }) => area === name);
+        return {
+          location,
+          latitude,
+          longitude,
+          weatherForecast: forecast.forecast
+        };
+      }
+    });
+  }
+
   private extractCoordinatesFromResponse({
     area_metadata
   }: WeatherForecastResponseBody): AreaMetadata[] {

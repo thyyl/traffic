@@ -57,16 +57,29 @@ const WeatherForecastTrafficLocationStrategy = new TrafficLocationStrategy({
     coordinates: Coordinates[]
   ) {
     try {
-      return weatherForecastService.geoDecodeCoordinatesToLocations(
-        dateTime,
-        coordinates
-      );
+      const response =
+        await weatherForecastService.geoDecodeCoordinatesToLocations(
+          dateTime,
+          coordinates
+        );
+
+      return response.sort((a, b) => a.location.localeCompare(b.location));
     } catch (error) {
       Logger.error(
         '[WeatherForecastTrafficLocationStrategy] Error in getting location from coordinates'
       );
 
-      return geoApifyService.getLocationFromCoordinates(dateTime, coordinates);
+      const response = await geoApifyService.getLocationFromCoordinates(
+        dateTime,
+        coordinates
+      );
+
+      const responseWithWeatherForecast =
+        await weatherForecastService.getWeatherForecast(response, dateTime);
+
+      return responseWithWeatherForecast.sort((a, b) =>
+        a.location.localeCompare(b.location)
+      );
     }
   }
 });
@@ -75,9 +88,13 @@ const GeoApifyTrafficLocationStrategy = new TrafficLocationStrategy({
   code: TrafficLocationCode.GEO_APIFY,
 
   async init(injector: Injector) {
+    const { WeatherForecastService } = await import(
+      '@modules/weather-forecast/weather-forecast.service'
+    );
     const { GeoApifyService } = await import(
       '@modules/geoapify/geoapify.service'
     );
+    weatherForecastService = injector.get(WeatherForecastService);
     geoApifyService = injector.get(GeoApifyService);
   },
 
@@ -85,9 +102,16 @@ const GeoApifyTrafficLocationStrategy = new TrafficLocationStrategy({
     dateTime: string,
     coordinates: Coordinates[]
   ) {
-    return await geoApifyService.getLocationFromCoordinates(
+    const response = await geoApifyService.getLocationFromCoordinates(
       dateTime,
       coordinates
+    );
+
+    const responseWithWeatherForecast =
+      await weatherForecastService.getWeatherForecast(response, dateTime);
+
+    return responseWithWeatherForecast.sort((a, b) =>
+      a.location.localeCompare(b.location)
     );
   }
 });
