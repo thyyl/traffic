@@ -44,7 +44,7 @@ export const WeatherCard: React.FC<WeatherCardProps> = ({
           title="http://www.weather.gov.sg/"
           href="http://www.weather.gov.sg/"
         >
-          <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[20rem] h-[10rem] ">
+          <div className="flex basis-full flex-col p-4 tracking-tight text-slate-100/50 sm:basis-1/2 w-[38rem] xl:w-[20rem] h-[10rem] ">
             {weather ? (
               <Fragment>
                 <h3 className="max-w-xs !pb-2 !m-0 font-bold  text-base text-slate-100">

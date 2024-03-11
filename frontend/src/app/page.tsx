@@ -13,7 +13,7 @@ import { useRecentSearches } from "@/hooks/recent-searches";
 import { useTrafficLocations } from "@/hooks/traffic-location";
 import { Steps, TrafficLocation } from "@/lib/types";
 import { useTheme } from "next-themes";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
 export default function Home() {
@@ -100,8 +100,6 @@ export default function Home() {
     return;
   };
 
-  console.log(localStorage.getItem(localStorageKey));
-
   const handleRecommendationsPressed = (dateSearched: string) => {
     setDate(new Date(dateSearched));
     setTime(new Date(dateSearched));
@@ -134,7 +132,7 @@ export default function Home() {
       <ErrorComponent error={!!error || !!detailsError || !!recentSearchError}>
         <div className="gap-y-8 flex flex-col">
           {[Steps.DETAILS, Steps.LOCATION].includes(steps) ? (
-            <div className="flex lg:flex-row flex-col w-full items-center">
+            <div className="flex xl:flex-row flex-col w-full items-center">
               <LocationContainer
                 trafficLocations={data}
                 isLoading={isLoading || detailsIsLoading}

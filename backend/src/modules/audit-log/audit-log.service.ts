@@ -6,6 +6,8 @@ import { CreateOneAuditLogInput } from './dto/audit-log.input';
 
 @Injectable()
 export class AuditLogService {
+  private readonly logger = new Logger(AuditLogService.name);
+
   constructor(
     @InjectRepository(AuditLog)
     private readonly auditLogRepository: Repository<AuditLog>
@@ -14,12 +16,12 @@ export class AuditLogService {
   async findManyAuditLogs(
     options?: FindManyOptions<AuditLog>
   ): Promise<AuditLog[]> {
-    Logger.log(`[AuditLogService] Finding audit logs`);
+    this.logger.log(`[AuditLogService] Finding audit logs`);
     return this.auditLogRepository.find(options);
   }
 
   async createOneAuditLog(input: CreateOneAuditLogInput): Promise<AuditLog> {
-    Logger.log(`[AuditLogService] Creating audit logs`);
+    this.logger.log(`[AuditLogService] Creating audit logs`);
     const auditLog = this.auditLogRepository.create(input);
     return this.auditLogRepository.save(auditLog);
   }

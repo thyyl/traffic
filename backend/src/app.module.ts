@@ -9,6 +9,7 @@ import { WeatherForecastModule } from '@modules/weather-forecast/weather-forecas
 import { GeoApifyModule } from '@modules/geoapify/geoapify.module';
 import { CacheModule } from '@modules/cache/cache.module';
 import { SystemModule } from '@modules/system/system.module';
+import { LoggerModule } from 'nestjs-pino';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { SystemModule } from '@modules/system/system.module';
         };
       }
     }),
-
+    LoggerModule.forRoot(),
     CoreModule,
     AuditLogModule,
     TrafficModule,

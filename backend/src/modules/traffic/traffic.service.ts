@@ -20,6 +20,7 @@ import { CreateOneAuditLogCommand } from '@modules/audit-log/cqrs/audit-log.cqrs
 @Injectable()
 export class TrafficService {
   private client: HTTPClient;
+  private readonly logger = new Logger(TrafficService.name);
   private readonly trafficLocationStrategy: {
     [code: string]: TrafficLocationStrategy;
   };
@@ -89,7 +90,7 @@ export class TrafficService {
     dateTime: string
   ): Promise<TrafficTransportImagesResponseBody> {
     try {
-      Logger.log('[TrafficService] Sending Get Request with:', dateTime);
+      this.logger.log('[TrafficService] Sending Get Request with:', dateTime);
 
       const { data } =
         await this.client.instance.get<TrafficTransportImagesResponseBody>(
@@ -97,11 +98,11 @@ export class TrafficService {
           { params: { date_time: dateTime } }
         );
 
-      Logger.log('[TrafficService] Data is successfully requested:');
+      this.logger.log('[TrafficService] Data is successfully requested:');
 
       return data;
     } catch (e) {
-      Logger.error(`[TrafficService] Error: ${e.message}`);
+      this.logger.error(`[TrafficService] Error: ${e.message}`);
       throw new TrafficTransportQueryException(e.message, '[TrafficService]');
     }
   }
@@ -136,7 +137,7 @@ export class TrafficService {
   private extractCoordinatesFromResponse({
     items
   }: TrafficTransportImagesResponseBody): Coordinates[] {
-    Logger.log('[TrafficService] Extracting coordinates from response');
+    this.logger.log('[TrafficService] Extracting coordinates from response');
 
     return items
       .map((item) => item.cameras)

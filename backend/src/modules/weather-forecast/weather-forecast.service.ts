@@ -16,6 +16,7 @@ import { TrafficLocationResponseBody } from '@modules/traffic/dto/traffic.dto';
 @Injectable()
 export class WeatherForecastService {
   private client: HTTPClient;
+  private readonly logger = new Logger(WeatherForecastService.name);
 
   constructor(
     private readonly configService: ConfigService,
@@ -30,7 +31,7 @@ export class WeatherForecastService {
     dateTime: string
   ): Promise<WeatherForecastResponseBody> {
     try {
-      Logger.log('[WeatherForecastService] Sending Get Request');
+      this.logger.log('[WeatherForecastService] Sending Get Request');
 
       const { data } =
         await this.client.instance.get<WeatherForecastResponseBody>(
@@ -38,11 +39,15 @@ export class WeatherForecastService {
           { params: dateTime && { date_time: dateTime } }
         );
 
-      Logger.log('[WeatherForecastService] Data is successfully requested:');
+      this.logger.log(
+        '[WeatherForecastService] Data is successfully requested:'
+      );
 
       return data;
     } catch (error) {
-      Logger.error('[WeatherForecastService] Error in sending Get Request');
+      this.logger.error(
+        '[WeatherForecastService] Error in sending Get Request'
+      );
       throw new WeatherForecastQueryException(
         error.message,
         '[WeatherForecast]'
@@ -54,7 +59,9 @@ export class WeatherForecastService {
     dateTime: string,
     coordinates: Coordinates[]
   ): Promise<TrafficLocationResponseBody[]> {
-    Logger.log('[WeatherForecastService] Extracting coordinates from response');
+    this.logger.log(
+      '[WeatherForecastService] Extracting coordinates from response'
+    );
 
     const key = UtilsHelper.buildKey('WEATHER', 'WEATHER_ITEM', dateTime);
 
@@ -92,7 +99,9 @@ export class WeatherForecastService {
     data: TrafficLocationResponseBody[],
     dateTime: string
   ): Promise<TrafficLocationResponseBody[]> {
-    Logger.log('[WeatherForecastService] Extracting coordinates from response');
+    this.logger.log(
+      '[WeatherForecastService] Extracting coordinates from response'
+    );
 
     const key = UtilsHelper.buildKey('WEATHER', 'WEATHER_ITEM', dateTime);
 
@@ -130,7 +139,9 @@ export class WeatherForecastService {
   private extractCoordinatesFromResponse({
     area_metadata
   }: WeatherForecastResponseBody): AreaMetadata[] {
-    Logger.log('[WeatherForecastService] Extracting coordinates from response');
+    this.logger.log(
+      '[WeatherForecastService] Extracting coordinates from response'
+    );
     return area_metadata.map((area) => area);
   }
 }

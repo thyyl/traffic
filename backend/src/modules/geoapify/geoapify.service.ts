@@ -20,6 +20,8 @@ import {
 
 @Injectable()
 export class GeoApifyService {
+  private readonly logger = new Logger(GeoApifyService.name);
+
   constructor(
     private readonly configService: ConfigService,
     private readonly queryBus: QueryBus
@@ -27,7 +29,7 @@ export class GeoApifyService {
 
   async postReverseGeocodingRequest(coordinates: Coordinates[]): Promise<any> {
     try {
-      Logger.log('[GeoApifyService] Sending Post Request');
+      this.logger.log('[GeoApifyService] Sending Post Request');
       const coordinatesParams = this.buildCoordinatesParams(coordinates);
 
       const { data } = await axios.post<PostReverseResponseBody>(
@@ -39,11 +41,11 @@ export class GeoApifyService {
         coordinatesParams
       );
 
-      Logger.log('[GeoApifyService] Data is successfully requested:');
+      this.logger.log('[GeoApifyService] Data is successfully requested:');
 
       return data;
     } catch (error) {
-      Logger.error('[GeoApifyService] Error in sending Post Request');
+      this.logger.error('[GeoApifyService] Error in sending Post Request');
       throw new GeoApifyCommandException(error.message, '[GeoApifyService]');
     }
   }
@@ -53,7 +55,7 @@ export class GeoApifyService {
   ): Promise<GeoApifyResponse> {
     const { url } = await this.postReverseGeocodingRequest(coordinates);
 
-    Logger.log('[GeoApifyService] Extracting location from url:', url);
+    this.logger.log('[GeoApifyService] Extracting location from url:', url);
 
     try {
       let response: GeoApifyResponse;
@@ -61,10 +63,10 @@ export class GeoApifyService {
       while (true) {
         const { data } = await axios.get<GeoApifyResponse>(url);
 
-        Logger.log('[GeoApifyService] Data is successfully requested');
+        this.logger.log('[GeoApifyService] Data is successfully requested');
 
         if ('status' in data && data.status === 'pending') {
-          Logger.log(
+          this.logger.log(
             '[GeoApifyService] Data is processing. Waiting for response'
           );
           await new Promise((resolve) => setTimeout(resolve, 7500));
@@ -76,7 +78,7 @@ export class GeoApifyService {
 
       return response;
     } catch (error) {
-      Logger.error('[GeoApifyService] Error in getting location from url');
+      this.logger.error('[GeoApifyService] Error in getting location from url');
       throw new GeoApifyQueryException(error.message, '[GeoApifyService]');
     }
   }
